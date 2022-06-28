@@ -4,7 +4,7 @@
 #
 Name     : pypi-pysnow
 Version  : 0.7.17
-Release  : 3
+Release  : 4
 URL      : https://files.pythonhosted.org/packages/d4/64/c958b786efe31b5b23777501a23be8e777a10e7dc0213f1b7a85f3d84d15/pysnow-0.7.17.tar.gz
 Source0  : https://files.pythonhosted.org/packages/d4/64/c958b786efe31b5b23777501a23be8e777a10e7dc0213f1b7a85f3d84d15/pysnow-0.7.17.tar.gz
 Summary  : ServiceNow HTTP client library
@@ -63,13 +63,16 @@ python3 components for the pypi-pysnow package.
 %prep
 %setup -q -n pysnow-0.7.17
 cd %{_builddir}/pysnow-0.7.17
+pushd ..
+cp -a pysnow-0.7.17 buildavx2
+popd
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1643757251
+export SOURCE_DATE_EPOCH=1656381951
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -82,6 +85,17 @@ export MAKEFLAGS=%{?_smp_mflags}
 pypi-dep-fix.py . ijson
 pypi-dep-fix.py . pytz
 python3 -m build --wheel --skip-dependency-check --no-isolation
+pushd ../buildavx2/
+export CFLAGS="$CFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 -msse2avx"
+export CXXFLAGS="$CXXFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 -msse2avx "
+export FFLAGS="$FFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+export FCFLAGS="$FCFLAGS -m64 -march=x86-64-v3 "
+export LDFLAGS="$LDFLAGS -m64 -march=x86-64-v3 "
+pypi-dep-fix.py . ijson
+pypi-dep-fix.py . pytz
+python3 -m build --wheel --skip-dependency-check --no-isolation
+
+popd
 
 %install
 export MAKEFLAGS=%{?_smp_mflags}
@@ -94,6 +108,15 @@ pypi-dep-fix.py %{buildroot} pytz
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
 echo ----[ mark ]----
+pushd ../buildavx2/
+export CFLAGS="$CFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+export CXXFLAGS="$CXXFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+export FFLAGS="$FFLAGS -m64 -march=x86-64-v3 -Wl,-z,x86-64-v3 "
+export FCFLAGS="$FCFLAGS -m64 -march=x86-64-v3 "
+export LDFLAGS="$LDFLAGS -m64 -march=x86-64-v3 "
+pip install --root=%{buildroot}-v3 --no-deps --ignore-installed dist/*.whl
+popd
+/usr/bin/elf-move.py avx2 %{buildroot}-v3 %{buildroot} %{buildroot}/usr/share/clear/filemap/filemap-%{name}
 
 %files
 %defattr(-,root,root,-)
