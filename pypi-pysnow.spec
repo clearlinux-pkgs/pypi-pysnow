@@ -4,7 +4,7 @@
 #
 Name     : pypi-pysnow
 Version  : 0.7.17
-Release  : 4
+Release  : 5
 URL      : https://files.pythonhosted.org/packages/d4/64/c958b786efe31b5b23777501a23be8e777a10e7dc0213f1b7a85f3d84d15/pysnow-0.7.17.tar.gz
 Source0  : https://files.pythonhosted.org/packages/d4/64/c958b786efe31b5b23777501a23be8e777a10e7dc0213f1b7a85f3d84d15/pysnow-0.7.17.tar.gz
 Summary  : ServiceNow HTTP client library
@@ -72,7 +72,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1656381951
+export SOURCE_DATE_EPOCH=1656400286
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
